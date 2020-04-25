@@ -1,0 +1,44 @@
+steps:
+# This step builds the container image.
+- name: 'gcr.io/cloud-builders/docker'
+  id: Build
+  args:
+  - 'build'
+  - '-t'
+  - 'gcr.io/$PROJECT_ID/email-automation:$SHORT_SHA'
+  - '.'
+
+# This step pushes the image to Container Registry
+- name: 'gcr.io/cloud-builders/docker'
+  id: Push
+  args:
+  - 'push'
+  - 'gcr.io/$PROJECT_ID/email-automation:$SHORT_SHA'
+
+# This step deploys the new version of our container image
+- name: 'gcr.io/cloud-builders/kubectl'
+  id: Apply
+  args:
+  - 'apply'
+  - '-f'
+  - 'k8s/staging/'
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=europe-west1-b'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=staging-v1'
+
+# Update image in deployment
+- name: 'gcr.io/cloud-builders/kubectl'
+  id: Deploy
+  args: [
+   'set', 
+   'image', 
+   'deployment', 
+   'email-automation', 
+   'email-automation=gcr.io/$PROJECT_ID/email-automation:$SHORT_SHA'
+  ]
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=europe-west1-b'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=staging-v1'
+
+images:
+  - 'gcr.io/$PROJECT_ID/email-automation'
