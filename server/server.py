@@ -14,7 +14,7 @@ if os.getenv('FLASK_DEBUG') == 'true':
   logging.basicConfig(level=logging.DEBUG) 
 
 # import helper functions 
-from helpers import missed_job, error_in_job, send_email
+from helpers import missed_job, error_in_job, send_email, error_email
 
 # APScheduler imports and config
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -80,6 +80,24 @@ def schedule_route ():
       return 'Date has already happened', 500
     # Add send email job to schedule
     scheduler.add_job(send_email, 'date', run_date=py_date, args=[email, data])
+    return 'ok', 200
+
+@app.route('/error', methods=['POST'])
+@cross_origin(['Content-Type', 'application/json'])
+def schedule_route ():
+  if request.method == 'POST': 
+    data = request.data
+    data = json.loads(data).values()
+
+    # Send email with data
+    response = error_email(data=data)
+    
+    # Check the status code from sendgrid request
+    if response.status_code < 400:
+      return 'ok', 200
+    else:
+      return 'Something went wrong, ' + response.status_code
+
     return 'ok', 200
 
 if __name__ == '__main__': 
