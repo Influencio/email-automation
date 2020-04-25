@@ -16,27 +16,31 @@ if os.getenv('FLASK_DEBUG') == 'true':
 # import helper functions 
 from helpers import missed_job, error_in_job, send_email, error_email
 
-# APScheduler imports and config
-from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
-# import event constants 
-from apscheduler.events import EVENT_JOB_MISSED, EVENT_JOB_ERROR
+# THIS SETS UP SCHEDULING - UNCOMMENT IF NEEDED ------------------------
+
+# # APScheduler imports and config
+# from apscheduler.schedulers.background import BackgroundScheduler
+# from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+# # import event constants 
+# from apscheduler.events import EVENT_JOB_MISSED, EVENT_JOB_ERROR
 
 # configure postgres jobstore
-POSTGRES_URI = os.getenv('POSTGRES_URI')
-jobstore = {
-  'default': SQLAlchemyJobStore(url=POSTGRES_URI)
-}
+# POSTGRES_URI = os.getenv('POSTGRES_URI')
+# jobstore = {
+#   'default': SQLAlchemyJobStore(url=POSTGRES_URI)
+# }
 
-scheduler = BackgroundScheduler(
-  jobstores=jobstore, 
-  job_defaults={'misfire_grace_time': 24*60*60} # If job is missed, still execute job if it's less than 24 hours after next_run_time
-) 
-# add event listeners
-scheduler.add_listener(missed_job, EVENT_JOB_MISSED)
-scheduler.add_listener(error_in_job, EVENT_JOB_ERROR)
-# start the scheduler
-scheduler.start()
+# scheduler = BackgroundScheduler(
+#   jobstores=jobstore, 
+#   job_defaults={'misfire_grace_time': 24*60*60} # If job is missed, still execute job if it's less than 24 hours after next_run_time
+# ) 
+# # add event listeners
+# scheduler.add_listener(missed_job, EVENT_JOB_MISSED)
+# scheduler.add_listener(error_in_job, EVENT_JOB_ERROR)
+# # start the scheduler
+# scheduler.start()
+
+# --------------------------------------------------------------------
 
 @app.route('/', methods=['GET', 'POST'])
 @cross_origin(['Content-Type', 'application/json'])
@@ -68,19 +72,20 @@ def root ():
 @cross_origin(['Content-Type', 'application/json'])
 def schedule_route ():
   if request.method == 'POST': 
-    data = request.data
-    email, date, data = json.loads(data).values()
-    # Check that email and date is provided
-    if email is None or date is None:
-      return 'Missing email / date', 500
-    # Format the provided date to ISO8601
-    py_date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ').isoformat()
-    # Check that the provided date has not already happened
-    if py_date < datetime.now().isoformat(): 
-      return 'Date has already happened', 500
-    # Add send email job to schedule
-    scheduler.add_job(send_email, 'date', run_date=py_date, args=[email, data])
-    return 'ok', 200
+    return 'Scheduling has not been implemented', 400
+    # data = request.data
+    # email, date, data = json.loads(data).values()
+    # # Check that email and date is provided
+    # if email is None or date is None:
+    #   return 'Missing email / date', 500
+    # # Format the provided date to ISO8601
+    # py_date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ').isoformat()
+    # # Check that the provided date has not already happened
+    # if py_date < datetime.now().isoformat(): 
+    #   return 'Date has already happened', 500
+    # # Add send email job to schedule
+    # scheduler.add_job(send_email, 'date', run_date=py_date, args=[email, data])
+    # return 'ok', 200
 
 @app.route('/error', methods=['POST'])
 @cross_origin(['Content-Type', 'application/json'])
