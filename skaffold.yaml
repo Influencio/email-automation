@@ -2,7 +2,7 @@ apiVersion: skaffold/v1beta11
 kind: Config
 build: 
   artifacts: 
-  - image: gcr.io/portfolio-246014/email-automation:latest
+  - image: gcr.io/influencio-274918/email-automation:latest
   local: 
     push: false
 deploy: 
@@ -10,16 +10,6 @@ deploy:
     manifests:
       - k8s/local/k8s-*
 profiles: 
-  - name: local
-    build: 
-      artifacts: 
-      - image: mikkelwestermann/email-automation
-      local: 
-        push: false
-    deploy: 
-      kubectl: 
-        manifests: 
-          - k8s/local/k8s-*
   - name: production
     build: 
       googleCloudBuild: 
