@@ -42,9 +42,9 @@ spec:
             - name: FLASK_APP
               value: server.py
             - name: FLASK_DEBUG
-              value: 'false'
+              value: 'true'
             - name: FLASK_ENV
-              value: production
+              value: staging
             - name: POSTGRES_URI
               valueFrom: 
                 secretKeyRef: 
