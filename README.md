@@ -16,6 +16,7 @@ To schedule emails you need to make a post request to / with a body consisting o
   "data": {
     "subject": "Example subject",
     "eg": "Text in Sendgrid email template",
+    "text": "Example text"
     ...
   }
 }
