@@ -44,7 +44,7 @@ from helpers import missed_job, error_in_job, send_email, error_email
 
 @app.route('/', methods=['GET', 'POST'])
 @cross_origin(['Content-Type', 'application/json'])
-def root ():
+def root():
   if request.method == 'GET': 
     return 'ok', 200
   elif request.method == 'POST': 
@@ -70,7 +70,7 @@ def root ():
 
 @app.route('/schedule', methods=['POST'])
 @cross_origin(['Content-Type', 'application/json'])
-def schedule_route ():
+def schedule_route():
   if request.method == 'POST': 
     return 'Scheduling has not been implemented', 400
     # data = request.data
@@ -89,7 +89,7 @@ def schedule_route ():
 
 @app.route('/error', methods=['POST'])
 @cross_origin(['Content-Type', 'application/json'])
-def schedule_route ():
+def error_route():
   if request.method == 'POST': 
     data = request.data
     data = json.loads(data).values()
