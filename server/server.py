@@ -90,9 +90,12 @@ def schedule_route():
 @app.route('/error', methods=['POST'])
 @cross_origin(['Content-Type', 'application/json'])
 def error_route():
-  if request.method == 'POST': 
+  if request.method == 'POST':
+    logging.info(request)
     data = request.data
+    logging.info('data1', data)
     data = json.loads(data).values()
+    logging.info('data2', data)
 
     # Send email with data
     response = error_email(data=data)
