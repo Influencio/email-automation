@@ -15,19 +15,20 @@ def send_email (email, data, template=DEFAULT_TEMPLATE_ID):
   message.dynamic_template_data = data
   message.template_id = template
   try:
-      sg = SendGridAPIClient(SENDGRID_API_KEY)
-      response = sg.send(message)
-      return response
+      sg = SendGridAPIClient(api_key=SENDGRID_API_KEY)
+      return sg.send(message)
   except Exception as e: 
     if not 'isErrorMail' in data:
       error_email({
         "subject": "Error when sending email",
-        "email": email,
+        "service": "email-automation",
+        "environment": os.getenv('FLASK_ENV'),
+        "text": "There was an error sending an email to " + email,
         "isErrorMail": True
         })
 
 def error_email(data): 
-  send_email(
+  return send_email(
     email=DEFAULT_EMAIL_RECIPIENT,
     data=data,
     template=ERROR_EMAIL_TEMPLATE
