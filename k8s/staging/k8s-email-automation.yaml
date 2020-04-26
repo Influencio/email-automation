@@ -58,7 +58,7 @@ spec:
                   name: email-automation-secrets
                   key: SENDGRID_API_KEY
             - name: SENDGRID_SENDER
-              value: hi@influencio.dk
+              value: mikkel@influencio.dk
             - name: DEFAULT_TEMPLATE_ID
               valueFrom: 
                 secretKeyRef: 
@@ -70,4 +70,4 @@ spec:
                   name: email-automation-secrets
                   key: ERROR_EMAIL_TEMPLATE
             - name: DEFAULT_EMAIL_RECIPIENT
-              value: mikkel@influencio.dk
+              value: mikkel.westermann.98@gmail.com
