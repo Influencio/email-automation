@@ -49,13 +49,27 @@ def root():
     return 'ok', 200
   elif request.method == 'POST': 
     data = request.data
-    email, data, template = json.loads(data).values()
+    values = json.loads(data)
+
+    logging.info(values)
+
+    data = None
+    email = None
+    template = None
+
+    try:
+      data = values['data']
+      email = values['email']
+      template = values['template']
+    except Exception as e: 
+      logging.debug(e)
+
     # Check that email is provided
     if email is None:
       return 'Missing email', 500
     
     # Send email with data
-    response;
+    response = None
     if template is None:
       response = send_email(email=email, data=data)
     else:
@@ -91,11 +105,9 @@ def schedule_route():
 @cross_origin(['Content-Type', 'application/json'])
 def error_route():
   if request.method == 'POST':
-    logging.info("ERROR")
+
     data = request.data
-    logging.info('data1', json.dumps(data))
-    data = json.loads(data).values()
-    logging.info('data2', json.dumps(data))
+    data = json.loads(data)['data']
 
     # Send email with data
     response = error_email(data=data)
