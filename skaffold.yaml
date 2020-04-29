@@ -2,7 +2,7 @@ apiVersion: skaffold/v1beta11
 kind: Config
 build: 
   artifacts: 
-  - image: gcr.io/influencio-274918/email-automation:latest
+  - image: gcr.io/influencio-274918/email-automation
   local: 
     push: false
 deploy: 
