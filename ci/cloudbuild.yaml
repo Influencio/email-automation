@@ -1,0 +1,49 @@
+steps:
+# This step builds the container image.
+- name: 'gcr.io/cloud-builders/docker'
+  id: Build
+  entrypoint: 'bash'
+  args: [
+    '-c',
+    'docker build -t gcr.io/$PROJECT_ID/$_SERVICE_NAME:$SHORT_SHA --build-arg GITHUB_TOKEN=$$GITHUB_TOKEN .'
+  ]
+  secretEnv: ['GITHUB_TOKEN']
+
+# This step pushes the image to Container Registry
+- name: 'gcr.io/cloud-builders/docker'
+  id: Push
+  args:
+  - 'push'
+  - 'gcr.io/$PROJECT_ID/$_SERVICE_NAME:$SHORT_SHA'
+
+# This step deploys the new version of our container image
+- name: 'gcr.io/cloud-builders/kubectl'
+  id: Apply
+  args:
+  - 'apply'
+  - '-f'
+  - 'k8s/$_ENVIRONMENT/'
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=$_CLOUDSDK_COMPUTE_ZONE'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=$_CLOUDSDK_CONTAINER_CLUSTER'
+
+# Update image in deployment
+- name: 'gcr.io/cloud-builders/kubectl'
+  id: Deploy
+  args: [
+   'set', 
+   'image', 
+   'deployment', 
+   '$_SERVICE_NAME', 
+   '$_SERVICE_NAME=gcr.io/$PROJECT_ID/$_SERVICE_NAME:$SHORT_SHA'
+  ]
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=$_CLOUDSDK_COMPUTE_ZONE'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=$_CLOUDSDK_CONTAINER_CLUSTER'
+
+secrets:
+  - kmsKeyName: projects/influencio-274918/locations/global/keyRings/token/cryptoKeys/github_token
+    secretEnv:
+      'GITHUB_TOKEN': CiQAZQEMcTGnzjE1X6uIsst33XUng013oyJjifWX9MUn2hjwOEQSUQD/TNzSWiZ8C8qz4d1/m7nGJYZENSdJdus2hUZKfAnl5fgtf1o6do6+hWGL30ejMSMFi4kqMs60qPk0xzvIoSwYQAODqQEoblwO28A+JHGXEA==
+images:
+  - 'gcr.io/$PROJECT_ID/$_SERVICE_NAME'
