@@ -39,6 +39,8 @@ spec:
             - containerPort: 5000
               name: email-auto
           env: 
+            - name: SERVICE_NAME
+              value: email-automation
             - name: FLASK_APP
               value: server.py
             - name: FLASK_DEBUG
