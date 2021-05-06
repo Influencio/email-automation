@@ -31,6 +31,9 @@ spec:
       name: email-automation
       labels: 
         name: email-automation
+      annotations:
+        sidecar.istio.io/proxyCPU: "10m"
+        sidecar.istio.io/proxyMemory: "32Mi"
     spec: 
       containers: 
         - name: email-automation
@@ -38,6 +41,13 @@ spec:
           ports: 
             - containerPort: 5000
               name: email-auto
+          resources:
+            limits:
+              cpu: 25m
+              memory: 128Mi
+            requests:
+              cpu: 10m
+              memory: 64Mi
           env: 
             - name: SERVICE_NAME
               value: email-automation
