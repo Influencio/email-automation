@@ -31,6 +31,9 @@ spec:
       name: email-automation
       labels: 
         name: email-automation
+      annotations:
+        sidecar.istio.io/proxyCPU: "35m"
+        sidecar.istio.io/proxyMemory: "64Mi"
     spec: 
       containers: 
         - name: email-automation
@@ -38,7 +41,16 @@ spec:
           ports: 
             - containerPort: 5000
               name: email-auto
+          resources:
+            limits:
+              cpu: 150m
+              memory: 128Mi
+            requests:
+              cpu: 35m
+              memory: 64Mi
           env: 
+            - name: SERVICE_NAME
+              value: email-automation
             - name: FLASK_APP
               value: server.py
             - name: FLASK_DEBUG
