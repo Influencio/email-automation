@@ -20,7 +20,7 @@ metadata:
   labels: 
     name: email-automation
 spec: 
-  replicas: 1
+  replicas: 2
   strategy: 
     type: RollingUpdate
   selector:
@@ -34,7 +34,19 @@ spec:
       annotations:
         sidecar.istio.io/proxyCPU: "35m"
         sidecar.istio.io/proxyMemory: "64Mi"
-    spec: 
+    spec:
+      affinity:
+        podAntiAffinity: 
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: "app"
+                      operator: In
+                      values:
+                      - email-automation
+                topologyKey: "kubernetes.io/hostname"
       containers: 
         - name: email-automation
           image: gcr.io/influencio-274918/email-automation:latest
